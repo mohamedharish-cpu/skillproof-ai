@@ -2,3 +2,4 @@ flask
 pdfplumber
 google-generativeai
 python-dotenv
+gunicorn
