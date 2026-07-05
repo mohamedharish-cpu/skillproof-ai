@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillProof AI - Result</title>
+<style>
+  :root{
+    --bg:#0a0a14;
+    --purple:#8b5cf6;
+    --pink:#ec4899;
+    --blue:#3b82f6;
+    --green:#22c55e;
+    --amber:#f59e0b;
+    --text:#e8e8f0;
+    --muted:#9494a8;
+    --card:#12121f;
+    --border:#2a2a3d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(139,92,246,0.15), transparent 40%),
+      radial-gradient(circle at 90% 30%, rgba(236,72,153,0.12), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(59,130,246,0.10), transparent 40%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:1200px;
+    margin:0 auto;
+    padding:24px 28px 60px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:26px;
+  }
+  .back{
+    display:flex;align-items:center;gap:8px;
+    color:var(--text);
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+  }
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-icon{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+  }
+  .logo span{font-weight:700;font-size:16px;}
+  .download{
+    display:flex;align-items:center;gap:8px;
+    background:transparent;
+    border:1px solid var(--purple);
+    color:var(--text);
+    padding:9px 18px;
+    border-radius:20px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .download:hover{background:rgba(139,92,246,0.15);}
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:18px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px;
+    transition:border-color .25s ease, box-shadow .25s ease, transform .2s ease;
+    cursor:pointer;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px var(--accent), 0 12px 28px -8px var(--accent);
+  }
+  .card h3{
+    font-size:15px;
+    margin-bottom:16px;
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .score-card{
+    grid-column:span 3;
+    display:flex;
+    align-items:center;
+    gap:28px;
+  }
+  .ring{
+    width:130px;height:130px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:conic-gradient(var(--green) calc(var(--pct)*1%), #1e2233 0);
+    flex-shrink:0;
+  }
+  .ring-inner{
+    width:100px;height:100px;
+    border-radius:50%;
+    background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .ring-inner .num{font-size:28px;font-weight:800;}
+  .ring-inner .of{font-size:12px;color:var(--muted);}
+  .score-text h2{font-size:22px;margin-bottom:6px;}
+  .score-text .verdict{color:var(--green);font-weight:700;font-size:15px;margin-bottom:6px;}
+  .score-text p{color:var(--muted);font-size:13.5px;max-width:420px;}
+
+  ul{list-style:none;}
+  li{
+    display:flex;align-items:flex-start;gap:8px;
+    font-size:13.5px;
+    color:#d5d5e0;
+    padding:6px 0;
+  }
+  .found li::before{content:'✅';font-size:12px;}
+  .missing li::before{content:'🟠';font-size:12px;}
+  .roles li::before{content:'•';color:var(--purple);font-weight:800;}
+  .suggest li::before{content:'➜';color:var(--purple);}
+
+  .found{--accent:#22c55e;}
+  .missing{--accent:#f59e0b;}
+  .roles{--accent:#3b82f6;}
+  .suggest{--accent:#ec4899;}
+  .questions{--accent:#14b8a6;}
+  .linkedin{--accent:#06b6d4;}
+  .prof-summary{--accent:#f97316;}
+  .exec-summary{--accent:#a855f7;}
+  .gap-path{--accent:#eab308;}
+  .role-matcher{--accent:#3b82f6;}
+  .soft-hard{--accent:#ef4444;}
+
+  .found h3{color:var(--green);}
+  .missing h3{color:var(--amber);}
+  .roles h3{color:var(--blue);}
+  .suggest h3{color:var(--pink);}
+  .linkedin h3{color:#06b6d4;}
+  .prof-summary h3{color:#f97316;}
+  .exec-summary h3{color:#a855f7;}
+  .gap-path h3{color:#eab308;}
+  .role-matcher h3{color:#3b82f6;}
+  .soft-hard h3{color:#ef4444;}
+
+  .pitch{
+    font-size:14px;
+    line-height:1.8;
+    color:#e0e0ec;
+    background:rgba(168,85,247,0.06);
+    border-left:3px solid #a855f7;
+    padding:14px 18px;
+    border-radius:8px;
+  }
+
+  .gap-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+  }
+  .gap-row:last-child{border-bottom:none;}
+  .gap-row .skill{color:#f0abfc;font-weight:600;}
+  .gap-row .res{color:var(--muted);}
+  .gap-row .res a{color:#eab308;text-decoration:none;}
+
+  .role-item{margin-bottom:16px;}
+  .role-item:last-child{margin-bottom:0;}
+  .role-top{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;}
+  .role-top .rname{font-weight:600;}
+  .role-top .rpct{color:#3b82f6;font-weight:700;}
+  .bar-track{height:8px;border-radius:6px;background:#1e2233;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .split-col h4{font-size:13px;margin-bottom:10px;}
+  .split-col.hard h4{color:#ef4444;}
+  .split-col.soft h4{color:#38bdf8;}
+  .chip{
+    display:inline-block;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:14px;
+    margin:3px 4px 3px 0;
+  }
+  .chip.hard{background:rgba(239,68,68,0.12);color:#fca5a5;}
+  .chip.soft{background:rgba(56,189,248,0.12);color:#7dd3fc;}
+
+  .questions ol{
+    list-style:none;
+    counter-reset:q;
+  }
+  .questions li{
+    counter-increment:q;
+    display:flex;gap:12px;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .questions li:last-child{border-bottom:none;}
+  .questions li::before{
+    content:counter(q);
+    background:#14b8a6;
+    color:#fff;
+    width:22px;height:22px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;
+    flex-shrink:0;
+  }
+  .score-card{--accent:#8b5cf6;}
+  .full{grid-column:span 3;}
+  .half{grid-column:span 1.5;}
+  .third{grid-column:span 1;}
+
+  .summary p{font-size:13.5px;color:#d5d5e0;line-height:1.7;}
+
+  .tip{
+    grid-column:span 3;
+    background:rgba(245,158,11,0.1);
+    border:1px solid rgba(245,158,11,0.3);
+    color:#fcd34d;
+    padding:16px 20px;
+    border-radius:12px;
+    font-size:13.5px;
+    display:flex;align-items:center;gap:10px;
+    margin-top:4px;
+  }
+
+  @media (max-width:900px){
+    .grid{grid-template-columns:1fr;}
+    .score-card{flex-direction:column;text-align:center;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" class="back">← Back to Home</a>
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <span>SkillProof AI</span>
+    </div>
+    <button class="download">⬇ Download Report</button>
+  </header>
+
+  <div class="grid" style="margin-bottom:18px;">
+    <div class="card score-card">
+      <div class="ring" style="--pct:{{ data.score }}">
+        <div class="ring-inner">
+          <div class="num">{{ data.score }}</div>
+          <div class="of">/100</div>
+        </div>
+      </div>
+      <div class="score-text">
+        <h2>Your Resume Score</h2>
+        <div class="verdict">
+          {% if data.score >= 80 %}Great Job! 🎉{% elif data.score >= 60 %}Good Start! 👍{% else %}Needs Work 💪{% endif %}
+        </div>
+        <p>Your resume is strong! With a few improvements, you can make it even better.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:18px;">
+    <div class="card exec-summary" style="grid-column:span 3;">
+      <h3>🧑‍💼 AI Recruiter Executive Summary</h3>
+      <div class="pitch">{{ data.executive_summary }}</div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:18px;">
+    <div class="card gap-path" style="grid-column:span 1.5;">
+      <h3>📚 Skill Gap Analysis & Learning Path</h3>
+      <div>
+        {% for g in data.learning_path %}
+        <div class="gap-row"><span class="skill">{{ g.skill }}</span><span class="res">{{ g.resource }}</span></div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card role-matcher" style="grid-column:span 1.5;">
+      <h3>🎯 Matching Job Roles</h3>
+      <div>
+        {% for r in data.matching_roles %}
+        <div class="role-item">
+          <div class="role-top"><span class="rname">{{ r.name }}</span><span class="rpct">{{ r.percent }}%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:{{ r.percent }}%"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:18px;">
+    <div class="card soft-hard" style="grid-column:span 3;">
+      <h3>🤝 Soft Skills vs Hard Skills</h3>
+      <div class="split">
+        <div class="split-col hard">
+          <h4>⚙ Hard Skills</h4>
+          <div>
+            {% for s in data.hard_skills %}<span class="chip hard">{{ s }}</span>{% endfor %}
+          </div>
+        </div>
+        <div class="split-col soft">
+          <h4>💬 Soft Skills</h4>
+          <div>
+            {% for s in data.soft_skills %}<span class="chip soft">{{ s }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:18px;">
+    <div class="card found">
+      <h3>➕ What You've Got</h3>
+      <ul>{% for s in data.skills_found %}<li>{{ s }}</li>{% endfor %}</ul>
+    </div>
+    <div class="card missing">
+      <h3>⚠ Skills to Add</h3>
+      <ul>{% for s in data.skills_missing %}<li>{{ s }}</li>{% endfor %}</ul>
+    </div>
+    <div class="card roles">
+      <h3>💼 Roles That Fit You</h3>
+      <ul>{% for r in data.job_roles %}<li>{{ r }}</li>{% endfor %}</ul>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:18px;">
+    <div class="card suggest" style="grid-column:span 1;">
+      <h3>💡 How to Level Up</h3>
+      <ul>{% for s in data.suggestions %}<li>{{ s }}</li>{% endfor %}</ul>
+    </div>
+    <div class="card questions" style="grid-column:span 2;">
+      <h3 style="color:#14b8a6;">🗂 Interview Questions Suggested for Your Skills</h3>
+      <ol>{% for q in data.interview_questions %}<li>{{ q }}</li>{% endfor %}</ol>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:18px;">
+    <div class="card linkedin" style="grid-column:span 1.5;">
+      <h3>🔗 LinkedIn Headline Suggestion</h3>
+      <p>{{ data.linkedin_headline }}</p>
+    </div>
+    <div class="card prof-summary" style="grid-column:span 1.5;">
+      <h3>📝 Professional Summary</h3>
+      <p>{{ data.professional_summary }}</p>
+    </div>
+  </div>
+
+  <div class="tip">⭐ Focus on acquiring the missing skills highlighted above to make your profile stand out!</div>
+</div>
+
+<script>
+  document.querySelector('.download').addEventListener('click', () => window.print());
+</script>
+</body>
+</html>

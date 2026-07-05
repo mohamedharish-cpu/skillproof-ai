@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillProof AI</title>
+<style>
+  :root{
+    --bg:#0a0a14;
+    --bg2:#0d0d1a;
+    --purple:#8b5cf6;
+    --pink:#ec4899;
+    --blue:#3b82f6;
+    --text:#e8e8f0;
+    --muted:#9494a8;
+    --card:#12121f;
+    --border:#2a2a3d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(139,92,246,0.18), transparent 40%),
+      radial-gradient(circle at 85% 60%, rgba(236,72,153,0.14), transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(59,130,246,0.12), transparent 40%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .container{
+    position:relative;
+    z-index:1;
+    max-width:760px;
+    margin:0 auto;
+    padding:28px 32px 60px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:60px;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .logo-icon{
+    width:46px;height:46px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    flex-shrink:0;
+  }
+  .logo-text h1{
+    font-size:19px;
+    font-weight:700;
+    letter-spacing:0.2px;
+  }
+  .logo-text p{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:1px;
+  }
+  .about-btn{
+    display:flex;align-items:center;gap:6px;
+    background:transparent;
+    border:1px solid var(--purple);
+    color:var(--text);
+    padding:9px 18px;
+    border-radius:20px;
+    font-size:13px;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .about-btn:hover{background:rgba(139,92,246,0.15);}
+
+  .hero{
+    text-align:center;
+    margin-bottom:44px;
+  }
+  .hero h2{
+    font-size:38px;
+    font-weight:800;
+    line-height:1.25;
+  }
+  .hero h2 .grad{
+    background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero p{
+    margin-top:14px;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.6;
+  }
+
+  .upload-box{
+    border:2px dashed rgba(139,92,246,0.5);
+    border-radius:20px;
+    padding:48px 32px;
+    text-align:center;
+    background:rgba(139,92,246,0.03);
+    cursor:pointer;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .upload-box:hover, .upload-box.drag{
+    border-color:var(--pink);
+    background:rgba(139,92,246,0.07);
+  }
+  .upload-icon{
+    width:76px;height:76px;
+    margin:0 auto 20px;
+    border-radius:50%;
+    border:2px solid var(--purple);
+    display:flex;align-items:center;justify-content:center;
+    font-size:30px;
+    color:var(--purple);
+  }
+  .upload-box h3{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .upload-box p{
+    color:var(--muted);
+    font-size:13.5px;
+    margin-bottom:22px;
+  }
+  .choose-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+    border:none;
+    color:#fff;
+    padding:13px 28px;
+    border-radius:30px;
+    font-size:14.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .choose-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 24px rgba(139,92,246,0.35);
+  }
+  #fileInput{display:none;}
+  .file-name{
+    margin-top:16px;
+    font-size:13px;
+    color:var(--purple);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .mini-resume{
+    font-size:18px;
+    filter:drop-shadow(0 0 4px rgba(139,92,246,0.6));
+  }
+  .analyze-btn{
+    display:none;
+    margin:22px auto 0;
+    background:linear-gradient(90deg,var(--purple),var(--pink));
+    border:none;
+    color:#fff;
+    padding:14px 36px;
+    border-radius:30px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .analyze-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 26px rgba(236,72,153,0.4);
+  }
+  .analyze-btn.show{display:inline-block;}
+
+  .secure{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    margin-top:18px;
+    color:var(--muted);
+    font-size:12.5px;
+  }
+
+  .why{
+    text-align:center;
+    margin-top:56px;
+  }
+  .why h3{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:26px;
+  }
+  .why h3 span{color:var(--purple);}
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px 14px;
+    text-align:center;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .card:hover{
+    transform:translateY(-4px);
+    border-color:var(--purple);
+  }
+  .card .icon{font-size:26px;margin-bottom:12px;}
+  .card h4{font-size:14px;font-weight:700;margin-bottom:6px;}
+  .card p{font-size:12px;color:var(--muted);line-height:1.5;}
+
+  .quote{
+    text-align:center;
+    margin-top:52px;
+    color:var(--muted);
+    font-size:13.5px;
+    font-style:italic;
+  }
+
+  @media (max-width:640px){
+    .cards{grid-template-columns:repeat(2,1fr);}
+    .hero h2{font-size:28px;}
+    .container{padding:22px 18px 40px;}
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🧠</div>
+        <div class="logo-text">
+          <h1>SkillProof AI</h1>
+          <p>AI Powered Resume Analyzer</p>
+        </div>
+      </div>
+      <button class="about-btn">ⓘ About</button>
+    </header>
+
+    <div class="hero">
+      <h2>Unlock <span class="grad">Your</span> <span class="grad">Potential</span> with AI</h2>
+      <p>Get a detailed analysis of your resume,<br>improve your skills and land your dream job!</p>
+    </div>
+
+    <form id="uploadForm" action="/analyze" method="POST" enctype="multipart/form-data">
+    <div class="upload-box" id="uploadBox">
+      <div class="upload-icon">☁️</div>
+      <h3>Upload Your Resume (PDF)</h3>
+      <p>Drag &amp; drop your PDF here or click to browse</p>
+      <button class="choose-btn" type="button" id="chooseBtn">⬆ Choose PDF File</button>
+      <input type="file" id="fileInput" name="resume" accept="application/pdf">
+      <div class="file-name" id="fileName">
+        <span class="mini-resume">📄</span>
+        <span id="fileText"></span>
+      </div>
+      <button class="analyze-btn" type="submit" id="analyzeBtn">🚀 Analyze Resume</button>
+    </div>
+    </form>
+    <div class="secure">🔒 Your data is secure and confidential</div>
+
+    <div class="why">
+      <h3>Why Choose <span>SkillProof AI</span>?</h3>
+      <div class="cards">
+        <div class="card">
+          <div class="icon">🧠</div>
+          <h4>AI Powered</h4>
+          <p>Advanced AI analyzes your resume deeply</p>
+        </div>
+        <div class="card">
+          <div class="icon">📈</div>
+          <h4>Smart Insights</h4>
+          <p>Get actionable insights to improve your profile</p>
+        </div>
+        <div class="card">
+          <div class="icon">🎯</div>
+          <h4>Job Ready</h4>
+          <p>Increase your chances of getting shortlisted</p>
+        </div>
+        <div class="card">
+          <div class="icon">⚡</div>
+          <h4>Save Time</h4>
+          <p>Fast, accurate and reliable analysis</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote">"The best preparation for tomorrow is doing your best today."</div>
+  </div>
+
+<script>
+  const uploadBox = document.getElementById('uploadBox');
+  const fileInput = document.getElementById('fileInput');
+  const chooseBtn = document.getElementById('chooseBtn');
+  const fileName = document.getElementById('fileName');
+  const fileText = document.getElementById('fileText');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+
+  chooseBtn.addEventListener('click', () => fileInput.click());
+  uploadBox.addEventListener('click', (e) => {
+    if(e.target !== chooseBtn && e.target !== analyzeBtn) fileInput.click();
+  });
+
+  function showFile(name){
+    fileText.textContent = name;
+    fileName.style.display = 'flex';
+    analyzeBtn.classList.add('show');
+  }
+
+  fileInput.addEventListener('change', () => {
+    if(fileInput.files.length){
+      showFile(fileInput.files[0].name);
+    }
+  });
+
+  analyzeBtn.addEventListener('click', () => {
+    analyzeBtn.textContent = '⏳ Analyzing...';
+  });
+
+  ['dragover','dragenter'].forEach(evt=>{
+    uploadBox.addEventListener(evt, e=>{
+      e.preventDefault();
+      uploadBox.classList.add('drag');
+    });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    uploadBox.addEventListener(evt, e=>{
+      e.preventDefault();
+      uploadBox.classList.remove('drag');
+    });
+  });
+  uploadBox.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files;
+    if(f.length){
+      fileInput.files = f;
+      showFile(f[0].name);
+    }
+  });
+</script>
+</body>
+</html>
